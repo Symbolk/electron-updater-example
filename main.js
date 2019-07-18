@@ -1,10 +1,16 @@
 // This is free and unencumbered software released into the public domain.
 // See LICENSE for details
 
-const {app, BrowserWindow, Menu, protocol, ipcMain, Notification} = require('electron');
-const log = require('electron-log');
-const {autoUpdater} = require("electron-updater");
-
+const {
+  app,
+  BrowserWindow,
+  Menu,
+  protocol,
+  ipcMain,
+  Notification
+} = require('electron')
+const log = require('electron-log')
+const { autoUpdater } = require('electron-updater')
 
 //-------------------------------------------------------------------
 // Logging
@@ -14,9 +20,9 @@ const {autoUpdater} = require("electron-updater");
 // This logging setup is not required for auto-updates to work,
 // but it sure makes debugging easier :)
 //-------------------------------------------------------------------
-autoUpdater.logger = log;
-autoUpdater.logger.transports.file.level = 'info';
-log.info('App starting...');
+autoUpdater.logger = log
+autoUpdater.logger.transports.file.level = 'info'
+log.info('App starting...')
 
 //-------------------------------------------------------------------
 // Define the menu
@@ -26,7 +32,7 @@ log.info('App starting...');
 let template = []
 if (process.platform === 'darwin') {
   // OS X
-  const name = app.getName();
+  const name = app.getName()
   template.unshift({
     label: name,
     submenu: [
@@ -37,12 +43,13 @@ if (process.platform === 'darwin') {
       {
         label: 'Quit',
         accelerator: 'Command+Q',
-        click() { app.quit(); }
-      },
+        click() {
+          app.quit()
+        }
+      }
     ]
   })
 }
-
 
 //-------------------------------------------------------------------
 // Open a window that displays the version
@@ -53,58 +60,55 @@ if (process.platform === 'darwin') {
 // for the app to show a window than to have to click "About" to see
 // that updates are working.
 //-------------------------------------------------------------------
-let win;
+let win
 
 function sendStatusToWindow(text) {
-  log.info(text);
-  win.webContents.send('message', text);
+  log.info(text)
+  win.webContents.send('message', text)
 }
 function createDefaultWindow() {
-  win = new BrowserWindow();
-  win.webContents.openDevTools();
+  win = new BrowserWindow()
+  win.webContents.openDevTools()
   win.on('closed', () => {
-    win = null;
-  });
-  win.loadURL(`file://${__dirname}/version.html#v${app.getVersion()}`);
-  return win;
+    win = null
+  })
+  win.loadURL(`file://${__dirname}/version.html#v${app.getVersion()}`)
+  return win
 }
 autoUpdater.on('checking-for-update', () => {
-  sendStatusToWindow('Checking for update...');
+  sendStatusToWindow('Checking for update...')
 })
-autoUpdater.on('update-available', (info) => {
-  sendStatusToWindow('Update available.');
+autoUpdater.on('update-available', info => {
+  sendStatusToWindow('Update available.')
 })
-autoUpdater.on('update-not-available', (info) => {
-  sendStatusToWindow('Update not available.');
+autoUpdater.on('update-not-available', info => {
+  sendStatusToWindow('Update not available.')
 })
-autoUpdater.on('error', (err) => {
-  sendStatusToWindow('Error in auto-updater. ' + err);
+autoUpdater.on('error', err => {
+  sendStatusToWindow('Error in auto-updater. ' + err)
 })
-autoUpdater.on('download-progress', (progressObj) => {
-  let log_message = "Download speed: " + progressObj.bytesPerSecond;
-  log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-  log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-  sendStatusToWindow(log_message);
+autoUpdater.on('download-progress', progressObj => {
+  let log_message = 'Download speed: ' + progressObj.bytesPerSecond
+  log_message = log_message + ' - Downloaded ' + progressObj.percent + '%'
+  log_message =
+    log_message + ' (' + progressObj.transferred + '/' + progressObj.total + ')'
+  sendStatusToWindow(log_message)
 })
 
 // autoUpdater.on('update-downloaded', (info) => {
-//   autoUpdater.quitAndInstall();  
+//   autoUpdater.quitAndInstall();
 // })
 
 app.on('ready', function() {
   // Create the Menu
-  const menu = Menu.buildFromTemplate(template);
-  Menu.setApplicationMenu(menu);
+  const menu = Menu.buildFromTemplate(template)
+  Menu.setApplicationMenu(menu)
 
-  app.setAppUserModelId("com.github.symbolk.electronupdaterexample");
-  app.setAsDefaultProtocolClient('electronupdaterexample');
-  autoUpdater.checkForUpdatesAndNotify();
-
-  createDefaultWindow();
-});
+  createDefaultWindow()
+})
 app.on('window-all-closed', () => {
-  app.quit();
-});
+  app.quit()
+})
 
 //
 // CHOOSE one of the following options for Auto updates
@@ -116,9 +120,11 @@ app.on('window-all-closed', () => {
 // This will immediately download an update, then install when the
 // app quits.
 //-------------------------------------------------------------------
-// app.on('ready', function()  {
-//   autoUpdater.checkForUpdatesAndNotify();
-// });
+app.setAppUserModelId('com.github.symbolk.electronupdaterexample')
+app.setAsDefaultProtocolClient('electronupdaterexample')
+app.on('ready', function() {
+  autoUpdater.checkForUpdatesAndNotify()
+})
 
 //-------------------------------------------------------------------
 // Auto updates - Option 2 - More control
@@ -144,4 +150,3 @@ app.on('window-all-closed', () => {
 // })
 // autoUpdater.on('download-progress', (progressObj) => {
 // })
-
