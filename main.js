@@ -5,8 +5,6 @@ const {app, BrowserWindow, Menu, protocol, ipcMain, Notification} = require('ele
 const log = require('electron-log');
 const {autoUpdater} = require("electron-updater");
 
-app.setAppUserModelId("com.github.symbolk.electronupdaterexample");
-app.setAsDefaultProtocolClient('smartcommit');
 
 //-------------------------------------------------------------------
 // Logging
@@ -89,14 +87,18 @@ autoUpdater.on('download-progress', (progressObj) => {
   sendStatusToWindow(log_message);
 })
 
-autoUpdater.on('update-downloaded', (info) => {
-  autoUpdater.quitAndInstall();  
-})
+// autoUpdater.on('update-downloaded', (info) => {
+//   autoUpdater.quitAndInstall();  
+// })
 
 app.on('ready', function() {
   // Create the Menu
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
+
+  app.setAppUserModelId("com.github.symbolk.electronupdaterexample");
+  app.setAsDefaultProtocolClient('electronupdaterexample');
+  autoUpdater.checkForUpdatesAndNotify();
 
   createDefaultWindow();
 });
@@ -114,9 +116,9 @@ app.on('window-all-closed', () => {
 // This will immediately download an update, then install when the
 // app quits.
 //-------------------------------------------------------------------
-app.on('ready', function()  {
-  autoUpdater.checkForUpdatesAndNotify();
-});
+// app.on('ready', function()  {
+//   autoUpdater.checkForUpdatesAndNotify();
+// });
 
 //-------------------------------------------------------------------
 // Auto updates - Option 2 - More control
